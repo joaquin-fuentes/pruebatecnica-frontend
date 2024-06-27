@@ -1,47 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import { createUser, getRoles } from '../helpers/queries';
+import { createUser, getRoles, isUserSuperAdmin } from '../helpers/queries';
 
 const CreateUser = () => {
     const [roles, setRoles] = useState([]);
-    const [currentUserRole, setCurrentUserRole] = useState('');
-
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        getRoles().then((resp) => {
-            if (resp) {
-                setRoles(resp);
-
-                // Obtener el usuario actual desde sessionStorage
-                const currentUser = JSON.parse(sessionStorage.getItem('usuario'));
-
-                // Buscar la descripción del rol del usuario actual
-                const userRole = resp.find(role => role._id === currentUser.role);
-                if (userRole) {
-                    setCurrentUserRole(userRole.description);
-                }
-            } else {
+        const fetchRolesAndPermissions = async () => {
+            try {
+                const rolesResp = await getRoles();
+                const superAdminStatus = await isUserSuperAdmin();
+                setRoles(rolesResp);
+                setIsSuperAdmin(superAdminStatus);
+            } catch (error) {
+                console.error('Error fetching roles or checking permissions:', error);
                 Swal.fire(
                     'An error occurred while trying to load data',
                     'Try this operation later',
                     'error'
                 );
             }
-        });
+        };
+
+        fetchRolesAndPermissions();
     }, []);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset
-    } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
-    const onSubmit = (formData) => {
-        if (currentUserRole !== 'superAdmin') {
+    const onSubmit = async (formData) => {
+        if (!isSuperAdmin) {
             Swal.fire(
                 'Permission Denied',
                 'You do not have permission to create users.',
@@ -50,24 +41,27 @@ const CreateUser = () => {
             return;
         }
 
-        const newUser = { ...formData };
-        createUser(newUser).then((resp) => {
+        try {
+            const resp = await createUser(formData);
             if (resp.status === 201) {
                 Swal.fire(
                     'Created user',
-                    `The user ${newUser.username} was created`,
+                    `The user ${formData.username} was created`,
                     'success'
                 );
                 navigate('/admin/dashboard');
                 reset();
             } else {
-                Swal.fire(
-                    'Error',
-                    'User could not be created, try again later',
-                    'error'
-                );
+                throw new Error('User could not be created');
             }
-        });
+        } catch (error) {
+            console.error('Error creating user:', error);
+            Swal.fire(
+                'Error',
+                'User could not be created, try again later',
+                'error'
+            );
+        }
     };
 
     return (
@@ -81,19 +75,15 @@ const CreateUser = () => {
                             type="text"
                             className={`form-control rounded-5 ${errors.username ? 'is-invalid' : ''}`}
                             placeholder='Enter your username'
-                            {
-                            ...register('username', {
+                            {...register('username', {
                                 required: 'The username is required',
                                 maxLength: {
                                     value: 250,
                                     message: "The username must contain a maximum of 250 characters",
                                 },
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.username?.message}
-                        </p>
+                        <p className='text-danger'>{errors.username?.message}</p>
                     </div>
                     <div className='mb-3 col-md-6'>
                         <label htmlFor="email" className='form-label ms-1'>Email</label>
@@ -101,8 +91,7 @@ const CreateUser = () => {
                             type="email"
                             className={`form-control rounded-5 ${errors.email ? 'is-invalid' : ''}`}
                             placeholder='Enter your email'
-                            {
-                            ...register('email', {
+                            {...register('email', {
                                 required: 'The email is required',
                                 maxLength: {
                                     value: 250,
@@ -110,14 +99,11 @@ const CreateUser = () => {
                                 },
                                 pattern: {
                                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                    message: 'El email debe contener @ y terminar en .com, .es, .com.ar u otra terminación'
+                                    message: 'The email must contain @ and end in .com, .es, .com.ar, or another domain'
                                 }
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.email?.message}
-                        </p>
+                        <p className='text-danger'>{errors.email?.message}</p>
                     </div>
                     <div className='mb-3 col-md-6'>
                         <label htmlFor="password" className='form-label ms-1'>Password</label>
@@ -125,57 +111,45 @@ const CreateUser = () => {
                             type="password"
                             className={`form-control rounded-5 ${errors.password ? 'is-invalid' : ''}`}
                             placeholder='Enter your password'
-                            {
-                            ...register('password', {
+                            {...register('password', {
                                 required: 'The password is required',
                                 maxLength: {
                                     value: 100,
                                     message: "The password must contain a maximum of 100 characters",
                                 },
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.password?.message}
-                        </p>
+                        <p className='text-danger'>{errors.password?.message}</p>
                     </div>
                     <div className='mb-3 col-md-6'>
                         <label htmlFor="name" className='form-label ms-1'>Name</label>
                         <input
-                            type="name"
+                            type="text"
                             className={`form-control rounded-5 ${errors.name ? 'is-invalid' : ''}`}
                             placeholder='Enter your name'
-                            {
-                            ...register('name', {
+                            {...register('name', {
                                 maxLength: {
                                     value: 250,
                                     message: "The name must contain a maximum of 250 characters",
                                 },
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.name?.message}
-                        </p>
+                        <p className='text-danger'>{errors.name?.message}</p>
                     </div>
                     <div className='mb-3 col-md-6'>
                         <label htmlFor="phone" className='form-label ms-1'>Phone</label>
                         <input
-                            type="phone"
+                            type="text"
                             className={`form-control rounded-5 ${errors.phone ? 'is-invalid' : ''}`}
                             placeholder='Enter your phone'
-                            {
-                            ...register('phone', {
+                            {...register('phone', {
                                 maxLength: {
                                     value: 20,
                                     message: "The phone must contain a maximum of 20 characters",
                                 },
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.phone?.message}
-                        </p>
+                        <p className='text-danger'>{errors.phone?.message}</p>
                     </div>
                     <div className='mb-3 col-md-6'>
                         <label htmlFor="role" className='form-label ms-1'>Role</label>
@@ -191,9 +165,7 @@ const CreateUser = () => {
                                 </option>
                             ))}
                         </select>
-                        <p className='text-danger'>
-                            {errors.role?.message}
-                        </p>
+                        <p className='text-danger'>{errors.role?.message}</p>
                     </div>
                     <div className="col-md-6">
                         <button type='submit' className='btn btn-primary rounded-5 w-100 mx-1'>Create</button>
@@ -201,6 +173,7 @@ const CreateUser = () => {
                     <div className="col-md-6">
                         <button type='reset' className='btn btn-outline-danger rounded-5 w-100' onClick={() => reset()}>Cancel</button>
                     </div>
+                    <Link to={"/admin/dashboard"} className='text-center mt-4'>Return to dashboard</Link>
                 </form>
             </div>
         </div>

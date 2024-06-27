@@ -1,43 +1,39 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2"
 import { login } from '../helpers/queries';
 
 const Login = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-        reset
     } = useForm();
 
     const onSubmit = (usuarioLogueado) => {
         login(usuarioLogueado).then((respuesta) => {
             if (respuesta) {
-                if (respuesta !== "") {
-                    const usuarioFromDB = { ...respuesta };
-                    if (usuarioFromDB.status === true) {
-                        sessionStorage.setItem("usuario", JSON.stringify(usuarioFromDB));
-                        //    setUsuarioLogueado(usuarioFromDB);
-                        console.log(usuarioFromDB)
-                        Swal.fire("Welcome", "You have entered correctly", "success");
-                        navigate("/admin/dashboard");
-                    } else {
-                        if (respuesta.status === 400) {
-                            Swal.fire("Error", "Incorrect email or password", "error");
-                        } else {
-                            Swal.fire("Error", "Suspended user, please contact the administrator to solve the problem. Thank you.", "error");
-                        }
-                    }
+                const usuarioFromDB = { ...respuesta };
+                if (usuarioFromDB.status === true) {
+                    sessionStorage.setItem("usuario", JSON.stringify(usuarioFromDB));
+                    Swal.fire("Welcome", "You have entered correctly", "success");
+                    navigate("/admin/dashboard");
                 } else {
-                    Swal.fire("Error", "Incorrect email or password", "error");
+                    if (respuesta.status === 400) {
+                        Swal.fire("Error", "Incorrect username or password", "error");
+                    } else {
+                        Swal.fire("Error", "Suspended user, please contact the administrator to solve the problem. Thank you.", "error");
+                    }
                 }
             } else {
-                Swal.fire("Error", "Incorrect email or password", "error");
+                Swal.fire("Error", "Incorrect username or password", "error");
             }
+        }).catch(error => {
+            console.error("Login error:", error);
+            Swal.fire("Error", "Failed to login. Please try again later.", "error");
         });
     };
 
@@ -52,20 +48,15 @@ const Login = () => {
                             type="text"
                             className={`form-control rounded-5 ${errors.username ? 'is-invalid' : ''}`}
                             placeholder='Enter your username'
-                            {
-                            ...register('username', {
+                            {...register('username', {
                                 required: 'The username is required',
                                 maxLength: {
                                     value: 250,
-                                    message:
-                                        "The username must contain a maximum of 250 characters",
+                                    message: "The username must contain a maximum of 250 characters",
                                 },
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.username?.message}
-                        </p>
+                        <p className='text-danger'>{errors.username?.message}</p>
                     </div>
                     <div className='mb-3'>
                         <label htmlFor="password" className='form-label ms-1'>Password</label>
@@ -73,28 +64,23 @@ const Login = () => {
                             type="password"
                             className={`form-control rounded-5 ${errors.password ? 'is-invalid' : ''}`}
                             placeholder='Enter your password'
-                            {
-                            ...register('password', {
+                            {...register('password', {
                                 required: 'The password is required',
                                 maxLength: {
                                     value: 100,
-                                    message:
-                                        "The ppassword must contain a maximum of 100 characters",
+                                    message: "The password must contain a maximum of 100 characters",
                                 },
-                            })
-                            }
+                            })}
                         />
-                        <p className='text-danger'>
-                            {errors.password?.message}
-                        </p>
+                        <p className='text-danger'>{errors.password?.message}</p>
                     </div>
                     <div className='mb-3'>
-                        <a href="" className='text-decoration-none text-center w-100'>Did you forget your password?</a>
+                        <Link to="/recoverpassword" className='text-decoration-none text-center w-100'>Did you forget your password?</Link>
                     </div>
-                    <button type='submit' className='btn btn-primary rounded-5 w-100' >Sign In</button>
+                    <button type='submit' className='btn btn-primary rounded-5 w-100'>Sign In</button>
                 </form>
                 <p className='text-center'>
-                    <span>New user</span> <a href="">Sign Up</a>
+                    <span>New user</span> <Link to="/createuser">Sign Up</Link>
                 </p>
             </div>
         </div>

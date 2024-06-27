@@ -7,9 +7,6 @@ import RoutesProtected from './RoutesProtected';
 
 const AppRouter = () => {
 
-    const userStorage = JSON.parse(sessionStorage.getItem('usuario')) || {}
-    const [userLogued, setUserLogued] = useState(userStorage);
-
     return (
         <BrowserRouter>
             <Routes>
@@ -20,6 +17,8 @@ const AppRouter = () => {
                 }></Route>
                 <Route path='/login' element={<Login></Login>}></Route>
                 <Route path='/' element={<Login></Login>}></Route>
+
+
                 <Route path='/*' element={<Error404></Error404>}> </Route>
             </Routes>
         </BrowserRouter>

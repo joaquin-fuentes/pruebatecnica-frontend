@@ -10,6 +10,7 @@ const UserEdit = ({ user, setUsers }) => {
     const [roles, setRoles] = useState([]);
     const [currentUserRole, setCurrentUserRole] = useState("");
     const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+    const [loading, setLoading] = useState(true); // Para mostrar un loader mientras se cargan los datos
 
     useEffect(() => {
         getRoles()
@@ -26,6 +27,7 @@ const UserEdit = ({ user, setUsers }) => {
                         setCurrentUserRole(userRole.description);
                         setIsSuperAdmin(userRole.description === "superAdmin");
                     }
+                    setLoading(false); // Indicar que los datos se han cargado
                 } else {
                     Swal.fire(
                         "An error occurred while trying to load data",
@@ -45,7 +47,17 @@ const UserEdit = ({ user, setUsers }) => {
     }, []);
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleShow = () => {
+        if (!isSuperAdmin) {
+            Swal.fire(
+                "Permission Denied",
+                "You do not have permission to perform this action",
+                "warning"
+            );
+            return;
+        }
+        setShow(true);
+    };
 
     const {
         register,
@@ -103,6 +115,7 @@ const UserEdit = ({ user, setUsers }) => {
                 setValue("name", resp.name);
                 setValue("phone", resp.phone);
                 setValue("role", resp.role);
+                setValue("status", resp.status);
             })
             .catch((error) => {
                 console.error("Error fetching user:", error);
@@ -113,6 +126,10 @@ const UserEdit = ({ user, setUsers }) => {
                 );
             });
     }, []);
+
+    if (loading) {
+        return <p>Loading...</p>; // Muestra un loader mientras se cargan los datos
+    }
 
     return (
         <>
@@ -204,7 +221,7 @@ const UserEdit = ({ user, setUsers }) => {
                         />
                         <p className="text-danger">{errors.phone?.message}</p>
                     </div>
-                    <div className="mb-3 col-md-12">
+                    <div className="mb-3 col-md-6">
                         <label htmlFor="role" className="form-label ms-1">
                             Role
                         </label>
@@ -220,6 +237,22 @@ const UserEdit = ({ user, setUsers }) => {
                                     {role.description}
                                 </option>
                             ))}
+                        </select>
+                        <p className="text-danger">{errors.role?.message}</p>
+                    </div>
+                    <div className="mb-3 col-md-6">
+                        <label htmlFor="status" className="form-label ms-1">
+                            Status
+                        </label>
+                        <select
+                            className={`form-control rounded-5 ${errors.status ? "is-invalid" : ""
+                                }`}
+                            name="status"
+                            {...register("status", { required: "You must choose a status" })}
+                        >
+                            <option value="">Select your status</option>
+                            <option value={true}>Activo</option>
+                            <option value={false}>Inactivo</option>
                         </select>
                         <p className="text-danger">{errors.role?.message}</p>
                     </div>

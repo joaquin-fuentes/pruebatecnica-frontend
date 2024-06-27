@@ -1,57 +1,70 @@
 import { MdDeleteOutline } from "react-icons/md";
-import { deleteUser, getUsers } from "../helpers/queries";
+import { deleteUser, getUsers, isUserSuperAdmin } from "../helpers/queries";
 import Swal from "sweetalert2";
 import UserEdit from "./UserEdit";
 import UserInfo from "./UserInfo";
 
-
 const UserItem = ({ user, setUsers, roles }) => {
+    const eliminarUsuario = async () => {
+        try {
+            const isSuperAdmin = await isUserSuperAdmin();
 
-    const eliminarProducto = () => {
-        Swal.fire({
-            title: "¿Are you sure to remove the product?",
-            text: "Once deleted it cannot be recovered",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Delete",
-            cancelButtonText: "Cancel",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                //aqui tengo que hacer la peticion delete
-                deleteUser(user._id).then((respuesta) => {
+            if (!isSuperAdmin) {
+                Swal.fire(
+                    "Permission Denied",
+                    "You do not have permission to perform this action",
+                    "warning"
+                );
+                return;
+            }
+
+            Swal.fire({
+                title: "Are you sure you want to delete this user?",
+                text: "Once deleted, it cannot be recovered",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const respuesta = await deleteUser(user._id);
                     if (respuesta.status === 200) {
                         Swal.fire(
-                            "Removed Product",
-                            `User ${user.username} was deleted`,
+                            "User Deleted",
+                            `User ${user.username} has been deleted`,
                             "success"
                         );
-                        console.log(respuesta)
-                        getUsers().then((resp) => {
-                            if (resp) {
-                                setUsers(resp);
-                            }
-                            else {
-                                Swal.fire(
-                                    'An error occurred while trying to load data',
-                                    'Try this operation later',
-                                    'error'
-                                );
-                            }
-                        });
+                        const usersResp = await getUsers();
+                        if (usersResp) {
+                            setUsers(usersResp);
+                        } else {
+                            Swal.fire(
+                                'An error occurred while trying to load data',
+                                'Try this operation later',
+                                'error'
+                            );
+                        }
                     } else {
-                        Swal.fire("There was an error", "Try again later", "error");
+                        Swal.fire("Error", "Try again later", "error");
                     }
-                });
-            }
-        });
+                }
+            });
+        } catch (error) {
+            console.error("Error checking super admin status or deleting user:", error);
+            Swal.fire(
+                "Error",
+                "Try again later",
+                "error"
+            );
+        }
     };
 
     const roleDescription = (id) => {
-        const role = roles.find(role => role._id === id);
+        const role = roles.find((role) => role._id === id);
         return role ? role.description : "Unknown role";
-    }
+    };
 
     return (
         <tr>
@@ -60,12 +73,14 @@ const UserItem = ({ user, setUsers, roles }) => {
             <td className="table-cell">{user.name}</td>
             <td className="table-cell">{user.phone}</td>
             <td className="table-cell">{roleDescription(user.role)}</td>
-            <td className="table-cell">{user.status ? "activo" : "inactivo"}</td>
+            <td className="table-cell">{user.status ? "Active" : "Inactive"}</td>
             <td className="table-cell">{new Date(user.createdAt).toLocaleDateString()}</td>
             <td className="">
                 <UserInfo user={user} roleDescription={roleDescription}></UserInfo>
                 <UserEdit user={user} setUsers={setUsers}></UserEdit>
-                <button className="btn btn-danger btn-sm m-1" onClick={eliminarProducto}><MdDeleteOutline /></button>
+                <button className="btn btn-danger btn-sm m-1" onClick={eliminarUsuario}>
+                    <MdDeleteOutline />
+                </button>
             </td>
         </tr>
     );

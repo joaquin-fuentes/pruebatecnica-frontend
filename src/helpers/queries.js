@@ -34,6 +34,21 @@ export const getUsers = async () => {
   } catch (error) {
   }
 }
+
+// FUNCION PARA CREAR USUARIOS
+export const createUser = async (user) => {
+  try {
+    const resp = await fetch(`${URL_USER}/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    return resp;
+  } catch (error) {
+  }
+};
 // FUNCION PARA OBTENER ROLES
 export const getRoles = async () => {
   try {

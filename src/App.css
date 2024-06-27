@@ -5,3 +5,10 @@ body {
 .card{
     width: 45vw;
 }
+
+.table-cell {
+  max-width: 120px; /* Puedes ajustar este valor según tus necesidades */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

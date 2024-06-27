@@ -1,24 +1,45 @@
-const URL_USUARIO = import.meta.env.VITE_API_USUARIO
+const URL_USER = import.meta.env.VITE_API_USER
+const URL_ROLE = import.meta.env.VITE_API_ROLE
 
 
-export const login = async (usuario) =>{
-    try {
-      const respuesta = await fetch(URL_USUARIO, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(usuario),
-      });
-      const datos = await respuesta.json();
-      return {
-        statusResp: respuesta.status,
-        status: datos.status,
-        username: datos.username,
-        name: datos.name,
-        role: datos.role,
-        token: datos.token
-      };
-    } catch (error) {
-    }
+//  FUNCION PARA REALIZAR LOGIN
+export const login = async (user) => {
+  try {
+    const respuesta = await fetch(URL_USER, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+    const datos = await respuesta.json();
+    return {
+      statusResp: respuesta.status,
+      status: datos.status,
+      username: datos.username,
+      name: datos.name,
+      role: datos.role,
+      token: datos.token
+    };
+  } catch (error) {
   }
+}
+
+// FUNCION PARA OBTENER USUARIOS
+export const getUsers = async () => {
+  try {
+    const resp = await fetch(URL_USER)
+    const listUsers = await resp.json();
+    return listUsers;
+  } catch (error) {
+  }
+}
+// FUNCION PARA OBTENER ROLES
+export const getRoles = async () => {
+  try {
+    const resp = await fetch(URL_ROLE)
+    const listRoles = await resp.json();
+    return listRoles;
+  } catch (error) {
+  }
+}

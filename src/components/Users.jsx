@@ -1,49 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from "sweetalert2"
+import { getUsers, getRoles } from '../helpers/queries';
+import UserItem from './UserItem';
 
 const Users = () => {
-    const [users, setUsers] = useState([
-        { id: 1, username: 'user1', email: 'user1@example.com' },
-        { id: 2, username: 'user2', email: 'user2@example.com' }
-    ]);
+    const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
 
-    const handleEdit = (id) => {
-        // Logica para editar usuario
-        console.log('Edit user with id:', id);
-    };
 
-    const handleDelete = (id) => {
-        // Logica para eliminar usuario
-        console.log('Delete user with id:', id);
-        setUsers(users.filter(user => user.id !== id));
-    };
+    useEffect(() => {
+        getRoles().then((resp) => {
+            if (resp) {
+                setRoles(resp);
+            }
+            else {
+                Swal.fire(
+                    'An error occurred while trying to load data',
+                    `Try this operation later`,
+                    'error');
+            }
+        })
+        getUsers().then((resp) => {
+            if (resp) {
+                setUsers(resp);
+            }
+            else {
+                Swal.fire(
+                    'An error occurred while trying to load data',
+                    `Try this operation later`,
+                    'error');
+            }
+        })
+        
 
-   
+    }, [])
+
     return (
         <div className="container mt-5">
             <h2>Usuarios</h2>
             <Link className="btn btn-primary mb-3" to={"/create"}>Crear Usuario</Link>
             <div className="table-responsive">
-                <table className="table">
+                <table className="table table-dark table-striped table-hover table-responsive">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Username</th>
                             <th>Email</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Creation date</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='table-group-divider'>
                         {users.map(user => (
-                            <tr key={user.id}>
-                                <td>{user.id}</td>
-                                <td>{user.username}</td>
-                                <td>{user.email}</td>
-                                <td>
-                                    <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(user.id)}>Editar</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>Eliminar</button>
-                                </td>
-                            </tr>
+                            <UserItem key={user._id} user={user} roles={roles}></UserItem>
                         ))}
                     </tbody>
                 </table>

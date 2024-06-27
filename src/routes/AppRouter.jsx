@@ -17,8 +17,6 @@ const AppRouter = () => {
                 }></Route>
                 <Route path='/login' element={<Login></Login>}></Route>
                 <Route path='/' element={<Login></Login>}></Route>
-
-
                 <Route path='/*' element={<Error404></Error404>}> </Route>
             </Routes>
         </BrowserRouter>

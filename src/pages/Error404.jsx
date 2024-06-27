@@ -5,7 +5,7 @@ const Error404 = () => {
     return (
         <div>
             error 404
-            <Link to="/dashboard" className='btn btn-primary ms-2'>Inicio</Link>
+            <Link to="/admin/dashboard" className='btn btn-primary ms-2'>Inicio</Link>
         </div>
     );
 };

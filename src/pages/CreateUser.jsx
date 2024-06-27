@@ -16,7 +16,7 @@ const CreateUser = () => {
 
     const onSubmit = (formData) => {
         console.log('Form submitted successfully:', formData);
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
     };
 
 

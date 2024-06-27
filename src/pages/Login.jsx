@@ -24,7 +24,7 @@ const Login = () => {
                         //    setUsuarioLogueado(usuarioFromDB);
                         console.log(usuarioFromDB)
                         Swal.fire("Welcome", "You have entered correctly", "success");
-                        navigate("/dashboard");
+                        navigate("/admin/dashboard");
                     } else {
                         if (respuesta.status === 400) {
                             Swal.fire("Error", "Incorrect email or password", "error");

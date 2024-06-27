@@ -8,12 +8,12 @@ const Sidebar = () => {
             <h5 className='text-center'>Menú</h5>
             <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item ">
-                    <div class="dropdown w-100">
-                        <button class="btn btn-secondary rounded-0 dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div className="dropdown w-100">
+                        <button className="btn btn-secondary rounded-0 dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Seguridad
                         </button>
-                        <ul class="dropdown-menu w-100 p-0 bg-secondary">
-                            <li><Link class="btn btn-secondary rounded-0 w-100 h-100 " to="#">Usuarios</Link></li>
+                        <ul className="dropdown-menu w-100 p-0 bg-secondary">
+                            <li><Link className="btn btn-secondary rounded-0 w-100 h-100 " to="#">Usuarios</Link></li>
                         </ul>
                     </div>
                 </li>

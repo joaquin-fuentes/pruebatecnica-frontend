@@ -49,6 +49,16 @@ export const createUser = async (user) => {
   } catch (error) {
   }
 };
+// FUNCION PARA ELIMINAR UN USUARIO
+export const deleteUser = async (id) => {
+  try {
+      const resp = await fetch(`${URL_USER}/${id}`,{
+          method: "DELETE"
+      });
+      return resp
+  } catch (error) {
+  }
+}
 // FUNCION PARA OBTENER ROLES
 export const getRoles = async () => {
   try {

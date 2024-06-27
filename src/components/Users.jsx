@@ -39,7 +39,7 @@ const Users = () => {
         <div className="container" style={{ marginLeft: '250px' }}>
             <h2>Usuarios</h2>
             <Link className="btn btn-primary mb-3" to={"/admin/create"}>Crear Usuario</Link>
-            <div className="table-responsive" style={{ maxHeight: '80vh', maxWidth: '90%', overflowY: 'auto' }}>
+            <div className="table-responsive" style={{ maxHeight: '80vh', maxWidth: '85%', overflowY: 'auto' }}>
                 <table className="table table-dark table-hover">
                     <thead>
                         <tr>
@@ -55,7 +55,7 @@ const Users = () => {
                     </thead>
                     <tbody className='table-group-divider'>
                         {users.map(user => (
-                            <UserItem key={user._id} user={user} roles={roles}></UserItem>
+                            <UserItem key={user._id} user={user} roles={roles} setUsers={setUsers}></UserItem>
                         ))}
                     </tbody>
                 </table>

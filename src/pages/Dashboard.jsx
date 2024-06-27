@@ -11,7 +11,7 @@ const Dashboard = () => {
     return (
         <div className="d-flex flex-column flex-lg-row">
             <Sidebar />
-            <div className="flex-grow-1 p-3">
+            <div className="p-3">
                 <Users />
             </div>
         </div>

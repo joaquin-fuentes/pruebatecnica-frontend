@@ -74,7 +74,7 @@ const Users = () => {
 
     // Renderizado del componente Users
     return (
-        <div className="container" style={{ marginLeft: '250px' }}>
+        <div className="container" style={{ marginLeft: '250px', width:"96%" }}>
             {/* Título del componente */}
             <h2>Users</h2>
             {/* Botón para crear usuario, visible solo para super administradores */}
@@ -82,7 +82,7 @@ const Users = () => {
                 Create User
             </button>
             {/* Tabla responsiva para mostrar la lista de usuarios */}
-            <div className="table-responsive" style={{ maxHeight: '80vh', maxWidth: '85%', overflowY: 'auto' }}>
+            <div className="table-responsive" style={{ maxHeight: '80vh', maxWidth: '98%', overflowY: 'auto' }}>
                 <table className="table table-dark table-hover">
                     {/* Encabezados de la tabla */}
                     <thead>

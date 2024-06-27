@@ -6,12 +6,22 @@ import { Modal } from "react-bootstrap";
 import { updateUser, getUsers, getUser, getRoles } from "../helpers/queries";
 
 const UserEdit = ({ user, setUsers }) => {
+    // Estado para controlar la visibilidad del modal
     const [show, setShow] = useState(false);
-    const [roles, setRoles] = useState([]);
-    const [currentUserRole, setCurrentUserRole] = useState("");
-    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-    const [loading, setLoading] = useState(true); // Para mostrar un loader mientras se cargan los datos
 
+    // Estado para almacenar los roles disponibles
+    const [roles, setRoles] = useState([]);
+
+    // Estado para almacenar el rol actual del usuario
+    const [currentUserRole, setCurrentUserRole] = useState("");
+
+    // Estado para verificar si el usuario es superAdmin
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+    // Estado para mostrar un loader mientras se cargan los datos
+    const [loading, setLoading] = useState(true);
+
+    // Hook de efecto para cargar roles y configuraciones iniciales
     useEffect(() => {
         getRoles()
             .then((resp) => {
@@ -46,7 +56,10 @@ const UserEdit = ({ user, setUsers }) => {
             });
     }, []);
 
+    // Función para cerrar el modal
     const handleClose = () => setShow(false);
+
+    // Función para abrir el modal de edición
     const handleShow = () => {
         if (!isSuperAdmin) {
             Swal.fire(
@@ -59,6 +72,7 @@ const UserEdit = ({ user, setUsers }) => {
         setShow(true);
     };
 
+    // Configuración del useForm para manejar el formulario
     const {
         register,
         handleSubmit,
@@ -67,6 +81,7 @@ const UserEdit = ({ user, setUsers }) => {
         setValue,
     } = useForm();
 
+    // Función para enviar el formulario de edición
     const onSubmit = (userUpdated) => {
         if (!isSuperAdmin) {
             Swal.fire(
@@ -107,6 +122,7 @@ const UserEdit = ({ user, setUsers }) => {
             });
     };
 
+    // Hook de efecto para cargar los datos del usuario al abrir el modal
     useEffect(() => {
         getUser(user._id)
             .then((resp) => {
@@ -127,18 +143,23 @@ const UserEdit = ({ user, setUsers }) => {
             });
     }, []);
 
+    // Si los datos aún se están cargando, mostrar un mensaje de carga
     if (loading) {
-        return <p>Loading...</p>; // Muestra un loader mientras se cargan los datos
+        return <p>Loading...</p>;
     }
 
+    // Renderizado del componente
     return (
         <>
+            {/* Botón para abrir el modal de edición */}
             <button className="btn btn-warning btn-sm m-1" onClick={handleShow}>
                 <AiTwotoneEdit />
             </button>
+            {/* Modal de edición */}
             <Modal show={show} onHide={handleClose}>
                 <form className="p-5 row" onSubmit={handleSubmit(onSubmit)}>
                     <h4 className="text-center mb-5">Edit User</h4>
+                    {/* Campo para editar el nombre de usuario */}
                     <div className="mb-3 col-md-6">
                         <label htmlFor="username" className="form-label ms-1">
                             Username
@@ -159,6 +180,7 @@ const UserEdit = ({ user, setUsers }) => {
                         />
                         <p className="text-danger">{errors.username?.message}</p>
                     </div>
+                    {/* Campo para editar el correo electrónico */}
                     <div className="mb-3 col-md-6">
                         <label htmlFor="email" className="form-label ms-1">
                             Email
@@ -178,13 +200,13 @@ const UserEdit = ({ user, setUsers }) => {
                                 pattern: {
                                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                                     message:
-                                        "El email debe contener @ y terminar en .com, .es, .com.ar u otra terminación",
+                                        "The email must contain @ and end with .com, .es, .com.ar, or another ending",
                                 },
                             })}
                         />
                         <p className="text-danger">{errors.email?.message}</p>
                     </div>
-
+                    {/* Campo para editar el nombre */}
                     <div className="mb-3 col-md-6">
                         <label htmlFor="name" className="form-label ms-1">
                             Name
@@ -203,6 +225,7 @@ const UserEdit = ({ user, setUsers }) => {
                         />
                         <p className="text-danger">{errors.name?.message}</p>
                     </div>
+                    {/* Campo para editar el teléfono */}
                     <div className="mb-3 col-md-6">
                         <label htmlFor="phone" className="form-label ms-1">
                             Phone
@@ -221,6 +244,7 @@ const UserEdit = ({ user, setUsers }) => {
                         />
                         <p className="text-danger">{errors.phone?.message}</p>
                     </div>
+                    {/* Campo para seleccionar el rol */}
                     <div className="mb-3 col-md-6">
                         <label htmlFor="role" className="form-label ms-1">
                             Role
@@ -232,6 +256,7 @@ const UserEdit = ({ user, setUsers }) => {
                             {...register("role", { required: "You must choose a role" })}
                         >
                             <option value="">Select your role</option>
+                            {/* Opciones de roles */}
                             {roles.map((role) => (
                                 <option key={role._id} value={role._id}>
                                     {role.description}
@@ -240,6 +265,7 @@ const UserEdit = ({ user, setUsers }) => {
                         </select>
                         <p className="text-danger">{errors.role?.message}</p>
                     </div>
+                    {/* Campo para seleccionar el estado */}
                     <div className="mb-3 col-md-6">
                         <label htmlFor="status" className="form-label ms-1">
                             Status
@@ -251,8 +277,8 @@ const UserEdit = ({ user, setUsers }) => {
                             {...register("status", { required: "You must choose a status" })}
                         >
                             <option value="">Select your status</option>
-                            <option value={true}>Activo</option>
-                            <option value={false}>Inactivo</option>
+                            <option value={true}>Active</option>
+                            <option value={false}>Inactive</option>
                         </select>
                         <p className="text-danger">{errors.role?.message}</p>
                     </div>

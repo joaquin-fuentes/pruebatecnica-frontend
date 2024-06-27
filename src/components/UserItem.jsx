@@ -3,6 +3,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { IoEyeSharp } from "react-icons/io5";
 import { deleteUser, getUsers } from "../helpers/queries";
 import Swal from "sweetalert2";
+import UserEdit from "./UserEdit";
 
 
 const UserItem = ({ user, setUsers, roles }) => {
@@ -65,7 +66,7 @@ const UserItem = ({ user, setUsers, roles }) => {
             <td className="">
                 <button className="btn btn-success btn-sm me-2 text-light" onClick={() => handleDelete(user.id)}><IoEyeSharp />
                 </button>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(user.id)}><AiTwotoneEdit /></button>
+                <UserEdit user={user} setUsers={setUsers}></UserEdit>
                 <button className="btn btn-danger btn-sm" onClick={eliminarProducto}><MdDeleteOutline /></button>
             </td>
         </tr>

@@ -34,6 +34,18 @@ export const getUsers = async () => {
   } catch (error) {
   }
 }
+// FUNCION PARA OBTENER UN SOCIO
+export const getUser = async (id)=>{
+  try {
+      const resp = await fetch(`${URL_USER}/${id}`)
+      const userEdit = await resp.json()
+      return userEdit
+
+  } catch (error) {
+      console.log(error)
+      return null
+  }
+}
 
 // FUNCION PARA CREAR USUARIOS
 export const createUser = async (user) => {
@@ -49,13 +61,30 @@ export const createUser = async (user) => {
   } catch (error) {
   }
 };
+// FUNCION PARA EDITAR UN USUARIO
+export const updateUser = async (user, id) => {
+  try {
+    const resp = await fetch(`${URL_USER}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    });
+    return resp
+
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
 // FUNCION PARA ELIMINAR UN USUARIO
 export const deleteUser = async (id) => {
   try {
-      const resp = await fetch(`${URL_USER}/${id}`,{
-          method: "DELETE"
-      });
-      return resp
+    const resp = await fetch(`${URL_USER}/${id}`, {
+      method: "DELETE"
+    });
+    return resp
   } catch (error) {
   }
 }

@@ -116,7 +116,7 @@ const UserEdit = ({ user, setUsers }) => {
 
     return (
         <>
-            <button className="btn btn-warning btn-sm me-2" onClick={handleShow}>
+            <button className="btn btn-warning btn-sm m-1" onClick={handleShow}>
                 <AiTwotoneEdit />
             </button>
             <Modal show={show} onHide={handleClose}>

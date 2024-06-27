@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2"
 import { login } from '../helpers/queries';
 
+/**
+ * Componente de formulario de inicio de sesión.
+ * 
+ * Este componente maneja el proceso de inicio de sesión, incluyendo la validación de los campos
+ * y la autenticación del usuario a través de la función `login`.
+ * 
+ */
 const Login = () => {
     const navigate = useNavigate();
 
@@ -13,6 +20,10 @@ const Login = () => {
         formState: { errors },
     } = useForm();
 
+    /**
+     * Maneja el envío del formulario de inicio de sesión.
+     * 
+     */
     const onSubmit = (usuarioLogueado) => {
         login(usuarioLogueado).then((respuesta) => {
             if (respuesta) {

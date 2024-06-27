@@ -1,6 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+/**
+ * Componente para la página de error 404 (Página no encontrada).
+ * 
+ * Este componente muestra un mensaje de error 404 y un enlace para volver a la página de inicio.
+ * 
+ */
 const Error404 = () => {
     return (
         <div className='container d-flex justify-content-center flex-column align-items-center'>

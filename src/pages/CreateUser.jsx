@@ -4,20 +4,31 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { createUser, getRoles, isUserSuperAdmin } from '../helpers/queries';
 
+/**
+ * Componente para crear nuevos usuarios.
+ * 
+ * Este componente permite a los usuarios con permisos de super administrador crear nuevos usuarios,
+ * especificando nombre de usuario, email, contraseña, nombre, teléfono y rol.
+ * 
+ */
 const CreateUser = () => {
-    const [roles, setRoles] = useState([]);
-    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-    const navigate = useNavigate();
+    const [roles, setRoles] = useState([]); // Estado para almacenar los roles disponibles
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false); // Estado para verificar si el usuario es super administrador
+    const navigate = useNavigate(); // Hook de navegación de React Router
 
     useEffect(() => {
+        // Función asíncrona para obtener roles y verificar permisos de super administrador
         const fetchRolesAndPermissions = async () => {
             try {
+                // Obtener roles disponibles desde la API
                 const rolesResp = await getRoles();
+                // Verificar si el usuario actual tiene permisos de super administrador
                 const superAdminStatus = await isUserSuperAdmin();
-                setRoles(rolesResp);
-                setIsSuperAdmin(superAdminStatus);
+                setRoles(rolesResp); // Actualizar estado con los roles obtenidos
+                setIsSuperAdmin(superAdminStatus); // Actualizar estado con el estado de super administrador
             } catch (error) {
                 console.error('Error fetching roles or checking permissions:', error);
+                // Mostrar alerta en caso de error al cargar datos
                 Swal.fire(
                     'An error occurred while trying to load data',
                     'Try this operation later',
@@ -26,13 +37,18 @@ const CreateUser = () => {
             }
         };
 
-        fetchRolesAndPermissions();
+        fetchRolesAndPermissions(); // Llamar a la función para cargar roles y permisos al montar el componente
     }, []);
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm(); // Hook useForm para gestionar el formulario
 
+    /**
+     * Función para manejar el envío del formulario de creación de usuarios.
+     */
     const onSubmit = async (formData) => {
+        // Verificar si el usuario tiene permisos de super administrador
         if (!isSuperAdmin) {
+            // Mostrar alerta si el usuario no tiene permisos de super administrador
             Swal.fire(
                 'Permission Denied',
                 'You do not have permission to create users.',
@@ -42,20 +58,24 @@ const CreateUser = () => {
         }
 
         try {
+            // Llamar a la función para crear usuario en la API
             const resp = await createUser(formData);
+            // Verificar la respuesta de la API
             if (resp.status === 201) {
+                // Mostrar alerta de éxito si el usuario se crea correctamente
                 Swal.fire(
                     'Created user',
                     `The user ${formData.username} was created`,
                     'success'
                 );
-                navigate('/admin/dashboard');
-                reset();
+                navigate('/admin/dashboard'); // Navegar de vuelta al dashboard después de crear el usuario
+                reset(); // Reiniciar el formulario después de la creación exitosa
             } else {
-                throw new Error('User could not be created');
+                throw new Error('User could not be created'); // Lanzar error si no se puede crear el usuario
             }
         } catch (error) {
             console.error('Error creating user:', error);
+            // Mostrar alerta si ocurre un error al crear el usuario
             Swal.fire(
                 'Error',
                 'User could not be created, try again later',
